@@ -1,0 +1,36 @@
+.spinner-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.spinner-container.fullscreen{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(3, 0, 0, 0.864);
+    opacity: 0.9;
+    z-index: 999;
+}
+
+
+.spinner{
+    border: 6px solid red;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border-left-color: #fff;
+    animation: spinner 1s ease-in-out infinite;
+}
+
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }100% {
+        transform: rotate(360deg)
+    }
+}

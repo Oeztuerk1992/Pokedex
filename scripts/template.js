@@ -1,47 +1,49 @@
-
-
-
-
-const createPokemonCard = (allPokemons) => {
-    const types = getTypesOfPokemon(allPokemons);
+function createPokemonCard (allPokemons,indexLastPokemon){
+    const type = getTypesOfPokemon(allPokemons);
     return `
-    <div class="pokemonCard ${types}" onclick="openModal(${allPokemons.id})">
-        <p class="pokemonId">#${allPokemons.id}</p>
-        <div class="pokemonName">
-        <h2>${allPokemons.name}</h2>
+    <div class="pokemonCard ${type}" onclick="openModal(${indexLastPokemon})">
+            <p class="pokemonId">#${allPokemons.id}</p>
+            <h2 class="pokemonName">${allPokemons.name}</h2>
+        <div>
+            <img class="pokemonBackground" src="./logo/logo1.png" alt="">
+            <img class="pokemonImg" src="${allPokemons.sprites.other['official-artwork'].front_default}" alt="${allPokemons.name}">
         </div>
-        <img src="${allPokemons.sprites.other['official-artwork'].front_default}" alt="${allPokemons.name}">
         <div class="pokemonType">
-            <p>${types}</p>
+            <p class="type">${type}</p>
         </div>
     </div>
     `;
 };
 
 
-const pokemonModal = (pokemon) => {
-    const types = getTypesOfPokemon(pokemon);
+function pokemonModal(pokemon){
+    currentIndex = allPokemons.findIndex(p => p.id === pokemon.id);
+    const type = getTypesOfPokemon(pokemon);
     return `
-    <div class="modal-content ${types}">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>${pokemon.name}</h2>
-        <div class="pokemonImage">
-        <img id="modal-img" src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}">
-        </div>
-        <p>Types: ${getTypesOfPokemon(pokemon)}</p>
-        <div class="tab-container">
-            <button onclick="showAbout(${pokemon.id})">About</button>
-            <button onclick="showStats(${pokemon.id})">Base Stats</button>
-            <button onclick="showGender(${pokemon.id})">Gender</button>
-        </div>
-        <div class="tab-content" id="tab-content">
-        </div>
-    </div>
-    `;
+            <div class="modal-content ${type}">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>${pokemon.name}</h2>
+        
+                <div class="pokemonImage">
+                    <a id="prev-button" onclick="goToPrevious()" href="#" class="a-button previous round">&#8249;</a>
+                    <img class="modal-img" id="modal-img" src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}">
+                    <a id="next-button" onclick="goToNext()"  href="#" class="a-button next round">&#8250;</a>
+                </div>
+                <div class="typeContainer">
+                    <p class="type">${getTypesOfPokemon(pokemon)}</p>
+                </div>
+                <div class="tab-container">
+                    <button onclick="showAbout(${pokemon.id})">About</button>
+                    <button onclick="showStats(${pokemon.id})">Base Stats</button>
+                </div>
+                <div class="tab-content" id="tab-content">
+                </div>
+            </div>
+        `;
 };
 
 
-const aboutContent = (pokemon) => {
+function aboutContent (pokemon){
     let height = pokemon.height / 10;
     let weight = pokemon.weight / 10;
     let abilities = getAbilities(pokemon)
@@ -63,7 +65,7 @@ const aboutContent = (pokemon) => {
 };
 
 
-const statsContent = (pokemon) => {
+function statsContent(pokemon){
     let statsHtml = "";
     for (let indexStats = 0; indexStats < pokemon.stats.length; indexStats++) { 
         let statName = pokemon.stats[indexStats].stat.name;
@@ -76,16 +78,18 @@ const statsContent = (pokemon) => {
                         <div class="progress-container">
                             <div class="progress-bar" style="width: ${percent}%"></div>
                         </div>
-                    </div> `;
-                        
+                    </div> `;                    
     }
     statsHtml += "";
     return statsHtml;
 }
 
 
-const getGender = (pokemon) => { 
+function pokemonNotFound(){ 
     return `
-        <p><strong>Gender:</strong></p>
+            <div class="error">
+                <p>pokémon not found...</p>
+                <button onclick="goBack()">go back</button>
+            </div>
     `;
-}
+};

@@ -1,105 +1,184 @@
 let currentPokemon = 1;
-const limit = 20;
+const limit = 25;
 let allPokemons = [];
+const pokemonContainer = document.getElementById('pokemon-container');
 const morePokemons = document.getElementById('load-more');
 const modal = document.querySelector('.modal');
-
-
+const overlay = document.querySelector('.overlay');
+const spinner = document.querySelector('.spinner-container');
+const xbtn = document.getElementById('searchInput');
+const searchContainer = document.getElementById('mySidebar');
+const searchInputDesktop = document.getElementById('searchInput');
+const searchInput = document.getElementById('searchInputMobile');
+let currentIndex = 0;
 
 
 async function fetchPokemonData() {
-    const pokemonContainer = document.getElementById('pokemon-container');
-    console.log(allPokemons);
     let endPokemon = currentPokemon + limit - 1;
+    checkPokemon();
     try {
+        const minumumWait = new Promise(resolve => setTimeout(resolve, 2000));
         for (let pokemon = currentPokemon; pokemon <= endPokemon; pokemon++) {
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
             const data = await response.json();
             allPokemons.push(data);
-
-            pokemonContainer.innerHTML += createPokemonCard(data);
+            let indexLastPokemon = allPokemons.length - 1;
+            pokemonContainer.innerHTML += createPokemonCard(data,indexLastPokemon); 
         }
-    } catch (error) {
-        pokemonContainer.innerHTML = `<p>Not pokemon found</p>`;
+        await minumumWait;
+        } catch (error) {
+        pokemonContainer.innerHTML = `<p>Pokemon not found</p>`; 
+        } finally { 
+            spinner.classList.add('hidden');
+    }
+};
+
+
+function checkPokemon() { 
+    spinner.classList.remove('hidden');
+    if (currentPokemon === 1) { 
+        spinner.classList.add('fullscreen');
     }
 };
 
 
 function getTypesOfPokemon(pokemon) {
     let types = pokemon.types[0].type.name;
-
-    if (pokemon.types[1]) {
-        types += ', ' + pokemon.types[1].type.name;
-    }
     return types;
-}
+};
 
 
 function loadedMorePokemons() {
     currentPokemon += limit;
     fetchPokemonData();
-}
+};
 
 
-function openModal(id) {
-    modal.style.display = 'block';
-
-    const findPokemon = allPokemons.find(p => p.id === id);
+function openModal(index) {
+    currentIndex = index;
+    const findPokemon = allPokemons[currentIndex];
     console.log(findPokemon);
-    console.log("wurde geklickt");
-
     if (findPokemon) { 
         modal.innerHTML = pokemonModal(findPokemon);
-        modal.style.display = "flex";
-        
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        document.body.classList.add('no-scroll');
     }  
-    
-}
+};
 
 
 function closeModal() {
-    modal.style.display = 'none';
-}
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
+    document.body.classList.remove('no-scroll');
+};
 
 
 function getAbilities(pokemon) { 
     let abilityText = "";
-
     for (let indexAbilitiy = 0; indexAbilitiy < pokemon.abilities.length; indexAbilitiy++) { 
         let pokemonName = pokemon.abilities[indexAbilitiy].ability.name;
-
         if (indexAbilitiy === 0) {
             abilityText += pokemonName
         } else { 
             abilityText += ", " + pokemonName;
         }
-        
     }
     return abilityText;
-}
+};
 
 
-const showAbout = (id) => {
-    const findPokemon = allPokemons.find(p => p.id === id);
+function showAbout(id){
+    const findPokemon = allPokemons.find(pokemon => pokemon.id === id);
     const tabContent = document.getElementById('tab-content');
     tabContent.innerHTML = aboutContent(findPokemon);
 };
 
 
-
-
-
-const showStats = (id) => { 
-    const findPokemon = allPokemons.find(p => p.id === id);
+function showStats(id){
+    const findPokemon = allPokemons.find(pokemon => pokemon.id === id);
     const tabContent = document.getElementById('tab-content');
     tabContent.innerHTML = statsContent(findPokemon);
-}
+};
 
 
+function goToPrevious() { 
+    if (currentIndex > 0) { 
+        currentIndex--;
+        openModal(currentIndex);
+    }
+};
 
 
-const showGender = (id) => { 
-    const findPokemon = allPokemons.find(p => p.id === id)
-    const tabContent = document.getElementById('tab-content');
-    tabContent.innerHTML = getGender();
-}
+function goToNext() { 
+    if (currentIndex < allPokemons.length - 1) { 
+        currentIndex++;
+        openModal(currentIndex);
+        document.body.classList.add('no-scroll');
+    }
+};
+
+
+function renderSearch(filteredList){
+    pokemonContainer.innerHTML = '';
+    for (let indexPokemon = 0; indexPokemon < filteredList.length; indexPokemon++) { 
+        let pokemon = filteredList[indexPokemon];
+        let oldIndex = allPokemons.indexOf(pokemon);
+        pokemonContainer.innerHTML += createPokemonCard(pokemon,oldIndex);
+    }
+};
+
+
+function searchDesktop() {
+    const input = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (input.length === 0) {
+        renderSearch(allPokemons);
+        morePokemons.style.display = 'flex';
+    } else if (input.length >= 3) {
+        const filteredPokemon = allPokemons.filter(pokemonName => pokemonName.name.toLowerCase().includes(input));
+        if (filteredPokemon.length > 0) {
+            renderSearch(filteredPokemon);
+        } else { 
+            pokemonContainer.innerHTML = pokemonNotFound();
+            input.innerHTML = "";
+        }
+        morePokemons.style.display = 'none';
+    } 
+};
+
+
+function searchMobile(){
+    const input = document.getElementById('searchInputMobile').value.toLowerCase().trim();
+    if (input.length === 0) {
+        renderSearch(allPokemons);
+        morePokemons.style.display = 'flex';
+    } else if (input.length >= 3) {
+        const filteredPokemon = allPokemons.filter(pokemonName => pokemonName.name.toLowerCase().includes(input));
+        if (filteredPokemon.length > 0) {
+            renderSearch(filteredPokemon);
+            searchContainer.style.display = 'none';
+        } else { 
+            pokemonContainer.innerHTML = pokemonNotFound();
+        }
+        morePokemons.style.display = 'none';
+    } 
+};
+
+
+function goBack() { 
+    pokemonContainer.innerHTML = '';
+    searchInputDesktop.value = '';
+    renderSearch(allPokemons);
+    morePokemons.style.display = 'flex';
+    searchContainer.style.display = 'none';
+    searchInput.value = '';
+};
+
+
+function searchReset() { 
+    if(searchInput.value === '') {
+        renderSearch(allPokemons);
+        morePokemons.style.display = 'flex';
+        searchContainer.style.display = 'none';
+    }
+};
