@@ -17,7 +17,6 @@ function createPokemonCard (allPokemons,indexLastPokemon){
 
 
 function pokemonModal(pokemon){
-    currentIndex = allPokemons.findIndex(p => p.id === pokemon.id);
     const type = getTypesOfPokemon(pokemon);
     return `
             <div class="modal-content ${type}">
@@ -25,9 +24,9 @@ function pokemonModal(pokemon){
                 <h2>${pokemon.name}</h2>
         
                 <div class="pokemonImage">
-                    <a id="prev-button" onclick="goToPrevious()" href="#" class="a-button previous round">&#8249;</a>
+                    <button id="prev-button" onclick="goToPrevious()" class="a-button previous round">&#8249;</button>
                     <img class="modal-img" id="modal-img" src="${pokemon.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}">
-                    <a id="next-button" onclick="goToNext()"  href="#" class="a-button next round">&#8250;</a>
+                    <button id="next-button" onclick="goToNext()" class="a-button next round">&#8250;</button>
                 </div>
                 <div class="typeContainer">
                     <p class="type">${getTypesOfPokemon(pokemon)}</p>

@@ -334,32 +334,22 @@ body.modal-open{
 
 
 .a-button {
-  text-decoration: none;
-  display: inline-block;
   font-size: 14px;
   padding: 8px 12px;
 }
 
 
-.a-button:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-
 .previous {
-  background-color: #ecdede42;
   font-size: 34px;
   color: black;
-  box-shadow: #0d0e10;
+  border-style: hidden;
 }
 
 
 .next {
-  background-color: #ecdede42;
   font-size: 34px;
   color: black;
-  box-shadow: #0d0e10;
+  border-style: hidden;
 }
 
 

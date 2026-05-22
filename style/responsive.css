@@ -83,21 +83,21 @@
     }
 
    .pokemonId {
-    font-size: 14px;
-    color: white;
+        font-size: 16px;
+        color: white;
     }
 
     .pokemonName{
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .pokemonCard img {
-    width: 140px;
-    height: 140px;
+        width: 140px;
+        height: 140px;
     }
 
     .pokemonType {
-    font-size: 14px;
+        font-size: 16px;
     }
 
     footer{

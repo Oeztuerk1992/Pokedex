@@ -1,6 +1,7 @@
 let currentPokemon = 1;
 const limit = 25;
 let allPokemons = [];
+let filteredPokemon = [];
 const pokemonContainer = document.getElementById('pokemon-container');
 const morePokemons = document.getElementById('load-more');
 const modal = document.querySelector('.modal');
@@ -13,24 +14,35 @@ const searchInput = document.getElementById('searchInputMobile');
 let currentIndex = 0;
 
 
+
 async function fetchPokemonData() {
-    let endPokemon = currentPokemon + limit - 1;
     checkPokemon();
     try {
         const minumumWait = new Promise(resolve => setTimeout(resolve, 2000));
-        for (let pokemon = currentPokemon; pokemon <= endPokemon; pokemon++) {
-            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
-            const data = await response.json();
-            allPokemons.push(data);
-            let indexLastPokemon = allPokemons.length - 1;
-            pokemonContainer.innerHTML += createPokemonCard(data,indexLastPokemon); 
-        }
+        morePokemons.style.display = 'none';
+        let collectionBox = await renderPokemons();
         await minumumWait;
+        pokemonContainer.innerHTML += collectionBox;
+        morePokemons.style.display = 'block';
         } catch (error) {
         pokemonContainer.innerHTML = `<p>Pokemon not found</p>`; 
         } finally { 
             spinner.classList.add('hidden');
     }
+};
+
+
+async function renderPokemons() { 
+    let endPokemon = currentPokemon + limit - 1;
+    let collectionBox = '';
+    for (let pokemon = currentPokemon; pokemon <= endPokemon; pokemon++) {
+            const response =  await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+            const data = await response.json();
+            allPokemons.push(data);
+            let indexLastPokemon = allPokemons.length - 1;
+            collectionBox += createPokemonCard(data,indexLastPokemon); 
+        }
+    return collectionBox;
 };
 
 
@@ -56,14 +68,15 @@ function loadedMorePokemons() {
 
 function openModal(index) {
     currentIndex = index;
-    const findPokemon = allPokemons[currentIndex];
-    console.log(findPokemon);
-    if (findPokemon) { 
+    const filteredList = showFilteredPokemonModal();
+    const findPokemon = filteredList[currentIndex];
+    if (findPokemon) {
         modal.innerHTML = pokemonModal(findPokemon);
         modal.classList.remove('hidden');
         overlay.classList.remove('hidden');
         document.body.classList.add('no-scroll');
-    }  
+        checkModalButtons();
+    }
 };
 
 
@@ -102,19 +115,39 @@ function showStats(id){
 };
 
 
+function checkModalButtons() { 
+    let prevButton = document.getElementById('prev-button');
+    let nextButton = document.getElementById('next-button');
+    const filteredList = showFilteredPokemonModal();
+    if (currentIndex === 0) {
+        prevButton.disabled = true;
+    } else {
+        prevButton.disabled = false;
+    }
+    if (currentIndex === filteredList.length - 1) {
+        nextButton.disabled = true;
+    } else {
+        nextButton.disabled = false;
+    }
+}
+
+
 function goToPrevious() { 
     if (currentIndex > 0) { 
         currentIndex--;
         openModal(currentIndex);
+        checkModalButtons();
     }
 };
 
 
 function goToNext() { 
-    if (currentIndex < allPokemons.length - 1) { 
+    const filteredList = showFilteredPokemonModal();
+    if (currentIndex < filteredList.length - 1) { 
         currentIndex++;
         openModal(currentIndex);
         document.body.classList.add('no-scroll');
+        checkModalButtons();
     }
 };
 
@@ -123,51 +156,55 @@ function renderSearch(filteredList){
     pokemonContainer.innerHTML = '';
     for (let indexPokemon = 0; indexPokemon < filteredList.length; indexPokemon++) { 
         let pokemon = filteredList[indexPokemon];
-        let oldIndex = allPokemons.indexOf(pokemon);
-        pokemonContainer.innerHTML += createPokemonCard(pokemon,oldIndex);
+        pokemonContainer.innerHTML += createPokemonCard(pokemon,indexPokemon);
     }
 };
 
 
-function searchDesktop() {
-    const input = document.getElementById('searchInput').value.toLowerCase().trim();
+function searchFunction(inputId) { 
+    const input = document.getElementById(inputId).value.toLowerCase().trim();
     if (input.length === 0) {
+        filteredPokemon = [];
         renderSearch(allPokemons);
         morePokemons.style.display = 'flex';
-    } else if (input.length >= 3) {
-        const filteredPokemon = allPokemons.filter(pokemonName => pokemonName.name.toLowerCase().includes(input));
+        return;
+    }
+    if (input.length < 3) { 
+        return;
+    }
+     filteredPokemon = allPokemons.filter(pokemonName => pokemonName.name.toLowerCase().includes(input));
         if (filteredPokemon.length > 0) {
             renderSearch(filteredPokemon);
         } else { 
             pokemonContainer.innerHTML = pokemonNotFound();
-            input.innerHTML = "";
         }
         morePokemons.style.display = 'none';
-    } 
+}
+
+
+function searchDesktop() {
+    searchFunction('searchInput');
 };
 
 
 function searchMobile(){
-    const input = document.getElementById('searchInputMobile').value.toLowerCase().trim();
-    if (input.length === 0) {
-        renderSearch(allPokemons);
-        morePokemons.style.display = 'flex';
-    } else if (input.length >= 3) {
-        const filteredPokemon = allPokemons.filter(pokemonName => pokemonName.name.toLowerCase().includes(input));
-        if (filteredPokemon.length > 0) {
-            renderSearch(filteredPokemon);
-            searchContainer.style.display = 'none';
-        } else { 
-            pokemonContainer.innerHTML = pokemonNotFound();
-        }
-        morePokemons.style.display = 'none';
-    } 
+    searchFunction('searchInputMobile');
 };
+
+
+function showFilteredPokemonModal() { 
+    if (filteredPokemon.length > 0) {
+        return filteredPokemon;
+    } else { 
+        return allPokemons;
+    }
+}
 
 
 function goBack() { 
     pokemonContainer.innerHTML = '';
     searchInputDesktop.value = '';
+    filteredPokemon = [];
     renderSearch(allPokemons);
     morePokemons.style.display = 'flex';
     searchContainer.style.display = 'none';
@@ -176,7 +213,8 @@ function goBack() {
 
 
 function searchReset() { 
-    if(searchInput.value === '') {
+    if (searchInput.value === '') {
+        filteredPokemon = [];
         renderSearch(allPokemons);
         morePokemons.style.display = 'flex';
         searchContainer.style.display = 'none';
