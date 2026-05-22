@@ -209,7 +209,6 @@ body.modal-open{
     display: flex;
     flex-direction: column;
     max-height: 90vh;
-    overflow-y: auto;
     padding-bottom: 20px;
     
 }
@@ -263,6 +262,10 @@ body.modal-open{
     border-radius: 4px;
 }
 
+.close:hover{
+    color: white;
+}
+
 
 .tab-container{
     display: flex;
@@ -292,6 +295,7 @@ body.modal-open{
 .tab-content{
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 
@@ -336,6 +340,12 @@ body.modal-open{
 .a-button {
   font-size: 14px;
   padding: 8px 12px;
+}
+
+
+.a-button:hover {
+  background-color: rgba(48, 48, 48, 0.2);
+  color: black;
 }
 
 
