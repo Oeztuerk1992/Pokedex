@@ -32,8 +32,8 @@ function pokemonModal(pokemon){
                     <p class="type">${getTypesOfPokemon(pokemon)}</p>
                 </div>
                 <div class="tab-container">
-                    <button onclick="showAbout(${pokemon.id})">About</button>
-                    <button onclick="showStats(${pokemon.id})">Base Stats</button>
+                    <button onclick="showTabContent(${pokemon.id}, 'about')">About</button>
+                    <button onclick="showTabContent(${pokemon.id}, 'stats')">Base Stats</button>
                 </div>
                 <div class="tab-content" id="tab-content">
                 </div>

@@ -101,17 +101,20 @@ function getAbilities(pokemon) {
 };
 
 
-function showAbout(id){
+function showTabContent(id, tagName){
     const findPokemon = allPokemons.find(pokemon => pokemon.id === id);
     const tabContent = document.getElementById('tab-content');
-    tabContent.innerHTML = aboutContent(findPokemon);
-};
 
+    if (!findPokemon) { 
+        tabContent.innerHTML = `<p>Pokemon not found</p>`;
+        return;
+    }
+    if (tagName === 'about') {
+        tabContent.innerHTML = aboutContent(findPokemon);
 
-function showStats(id){
-    const findPokemon = allPokemons.find(pokemon => pokemon.id === id);
-    const tabContent = document.getElementById('tab-content');
-    tabContent.innerHTML = statsContent(findPokemon);
+    } else if (tagName === 'stats') {
+        tabContent.innerHTML = statsContent(findPokemon);
+    }
 };
 
 
@@ -172,13 +175,13 @@ function searchFunction(inputId) {
     if (input.length < 3) { 
         return;
     }
-     filteredPokemon = allPokemons.filter(pokemonName => pokemonName.name.toLowerCase().includes(input));
-        if (filteredPokemon.length > 0) {
-            renderSearch(filteredPokemon);
-        } else { 
-            pokemonContainer.innerHTML = pokemonNotFound();
-        }
-        morePokemons.style.display = 'none';
+    filteredPokemon = allPokemons.filter(pokemon => pokemon.name.toLowerCase().includes(input));
+    if (filteredPokemon.length > 0) {
+        renderSearch(filteredPokemon);
+    } else { 
+        pokemonContainer.innerHTML = pokemonNotFound();
+    }
+    morePokemons.style.display = 'none';
 }
 
 

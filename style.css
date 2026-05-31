@@ -122,7 +122,7 @@ header{
 
 .pokemonName{
     font-weight: bold;
-    color: #303030;
+    color: black;
 }
 
 
@@ -150,7 +150,7 @@ header{
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.2);
     width: 90px;
-   
+    color: whitesmoke;
 }
 
 
@@ -222,8 +222,7 @@ body.modal-open{
 
 .modal-content img{
     height: 260px;
-    width: 260px;
-    
+    width: 260px;         
 }
 
 
@@ -275,7 +274,7 @@ body.modal-open{
 
 
 .tab-container button{
-    color: grey;
+    color: black;
     background: none;
     border: none;
     padding: 10px;
@@ -287,7 +286,7 @@ body.modal-open{
 
 
 .tab-container button:hover{
-    color: black;
+    color: rgb(233, 210, 210);
     border-bottom: 2px solid black;
 }
 
