@@ -166,13 +166,9 @@ function renderSearch(filteredList){
 
 function searchFunction(inputId) { 
     const input = document.getElementById(inputId).value.toLowerCase().trim();
-    if (input.length === 0) {
-        filteredPokemon = [];
+    if (input.length < 3) {
         renderSearch(allPokemons);
         morePokemons.style.display = 'flex';
-        return;
-    }
-    if (input.length < 3) { 
         return;
     }
     filteredPokemon = allPokemons.filter(pokemon => pokemon.name.toLowerCase().includes(input));
