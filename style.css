@@ -286,7 +286,6 @@ body.modal-open{
 
 
 .tab-container button:hover{
-    color: rgb(233, 210, 210);
     border-bottom: 2px solid black;
 }
 
